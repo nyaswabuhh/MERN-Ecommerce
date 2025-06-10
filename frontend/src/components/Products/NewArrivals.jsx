@@ -104,17 +104,17 @@ const NewArrivals = () => {
   ];
   const handleMouseDown =(e)=>{
     setIsDragging(true);
-    setStartX(e.pageX -scrollRef.current.offsetLeft)
+    setStartX(e.pageX - scrollRef.current.offsetLeft)
     setScrollLeft(scrollRef.current.scrollLeft)
 
   };
 
   const handleMouseMove = (e) =>{
-    if(!isDragging){
+      if(!isDragging) return;
       const x = e.pageX - scrollRef.current.offsetLeft;
       const walk = x -startX;
       scrollRef.current.scrollLeft=scrollLeft-walk;
-    }
+    
 
   };
 
@@ -157,12 +157,13 @@ const NewArrivals = () => {
     if(container){
       container.addEventListener("scroll", updateScrollButtons);
       updateScrollButtons();
+      return ()=> container.removeEventListener("scroll",updateScrollButtons);
     }
-  });
+  }, []);
 
   
   return (
-    <section>
+    <section className='py-16 px-4 lg:px-0'>
       <div className='container mx-auto text-center mb-10 relative'>
         <h2 className='text-xl font-bold mb-4'>Explore New Arrivals</h2>
         <p className='text-lg text-gray-600 mb-8'>Discover the latest and exclusive styles tailored just for you to keep you wardrobe fresh & stylish</p>
@@ -187,7 +188,7 @@ const NewArrivals = () => {
             onMouseMove={handleMouseMove}
             onMouseUp={handleMouseUpOrLeave}
             onMouseLeave={handleMouseUpOrLeave}
-            className='container mx-auto overflow-x-scroll flex space-x-6 relative'>
+            className={`container mx-auto overflow-x-scroll flex space-x-6 relative ${isDragging ? "cursor-grabbing" : "cursor-grab"}`}>
           {newArrivals.map((product) => (
             <div key={product._id} className='min-w-[100%] sm:min-w-[50%] lg:min-w-[30%] relative'>
               <img src={product.images[0]?.url} 

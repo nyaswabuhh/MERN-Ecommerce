@@ -2,6 +2,7 @@ import React from 'react'
 import Hero from '../components/Layout/Hero'
 import GenderCollections from '../components/Products/GenderCollections'
 import NewArrivals from '../components/Products/NewArrivals'
+import ProductDetails from '../components/Products/ProductDetails'
 
 
 const Home = () => {
@@ -10,6 +11,10 @@ const Home = () => {
       <Hero />
       <GenderCollections />
       <NewArrivals />
+      {/* Best Sellers */}
+      <h2 className='text-2xl text-center font-bold mb-4'>
+        Best Seller</h2>
+      <ProductDetails />
     </div>
   )
 }
