@@ -13,6 +13,8 @@ import OrderConfirmationPage from "./Pages/OrderConfirmationPage";
 import OrderDetailsPage from "./Pages/OrderDetailsPage";
 import MyOrdersPage from "./Pages/MyOrdersPage";
 import AdminLayout from "./components/Admin/AdminLayout";
+import AdminHomepage from "./Pages/AdminHomepage";
+import Test from "./Pages/Test";
 
 function App() {
   return (
@@ -34,7 +36,10 @@ function App() {
           <Route path="order/:id" element={<OrderDetailsPage />}/>
           <Route path="my-orders" element={<MyOrdersPage />}/>
         </Route>
-        <Route path="/admin" element={<AdminLayout />} />
+        <Route path="/admin" element={<AdminLayout />}>
+          <Route index element={<AdminHomepage />} />
+          <Route path="test" element={<Test />} />
+        </Route>
       </Routes>
     </BrowserRouter>
   );
