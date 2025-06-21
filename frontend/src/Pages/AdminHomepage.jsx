@@ -37,10 +37,16 @@ const AdminHomepage = () => {
     },
   ];
 
+  const currentDate = new Date();
+
   return (
     <div className="w-full px-4 sm:px-6 lg:px-8 py-6 bg-gray-100 min-h-screen">
       <div className="max-w-7xl mx-auto">
-        <h1 className="text-3xl font-bold mb-6">Admin Dashboard</h1>
+
+        <div className=" flex justify-between mb-4">
+          <h1 className="text-3xl font-bold mb-6">Admin Dashboard</h1>
+          <p className="text-2xl font-semibold">Date: {currentDate.toDateString()}</p>
+        </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           <div className="p-4 shadow-md rounded-lg bg-white">
