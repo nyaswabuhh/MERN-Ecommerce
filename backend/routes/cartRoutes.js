@@ -11,7 +11,7 @@ const getCart = async (userId, guestId) => {
   if (userId) {
     return await Cart.findOne({ user: userId });
   } else if (guestId) {
-    return await Cart.findOne(guestId);
+    return await Cart.findOne({ guest: guestId });
   }
   return null;
 };
@@ -63,8 +63,8 @@ router.post("/", async (req, res) => {
     } else {
       //create  anew cart for guest or user
       const newCart = await Cart.create({
-        userId: userId ? userId : undefined,
-        guestId: guestId ? guestId : "guest_" + new Date().getTime(),
+        user: userId ? userId : undefined,
+        guest: guestId ? guestId : "guest_" + new Date().getTime(),
         products: [
           {
             productId,
@@ -83,6 +83,104 @@ router.post("/", async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "server error" });
+  }
+});
+
+//@route PUT /api/cart
+//@desc update cart quantity for logged in user or guest
+//access Public
+
+router.put("/", async (req, res) => {
+  const { productId, quantity, size, color, guestId, userId } = req.body;
+
+  try {
+    let cart = await getCart(userId, guestId);
+
+    if (!cart) return res.status(404).json({ message: "Cart not found" });
+
+    const productIndex = cart.products.findIndex(
+      (p) =>
+        p.productId.toString() === productId &&
+        p.size === size &&
+        p.color === color
+    );
+    if (productIndex > -1) {
+      //update quantity
+
+      if (quantity > 0) {
+        cart.products[productIndex].quantity = quantity; //remove item if quantity is 0
+      } else {
+        cart.products.splice(productIndex, 1);
+      }
+      cart.totalPrice = cart.products.reduce(
+        (acc, item) => acc + item.price * item.quantity,
+        0
+      );
+      await cart.save();
+      return res.status(200).json(cart);
+    } else {
+      return res.status(404).json({ message: "product not found in cart" });
+    }
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Server error" });
+  }
+});
+
+//@route DELETE /api/cart
+//@desc Delete a product from cart
+//@access Public
+
+router.delete("/", async (req, res) => {
+  const { productId, size, color, guestId, userId } = req.body;
+
+  try {
+    let cart = await getCart(userId, guestId);
+
+    if (!cart) return res.status(404).json({ message: "product not found" });
+
+    const productIndex = cart.products.findIndex(
+      (p) =>
+        p.productId.toString() === productId &&
+        p.size === size &&
+        p.color === color
+    );
+    if (productIndex > -1) {
+      cart.products.splice(productIndex, 1);
+
+      cart.totalPrice = cart.products.reduce(
+        (acc, item) => acc + item.price * item.quantity,
+        0
+      );
+      await cart.save();
+      return res.status(200).json(cart);
+    } else {
+      return res.status(404).json({ message: "product not found in cart" });
+    }
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "server not found" });
+  }
+});
+
+//@route GET /api/cart
+//@desc get user's cart
+//@access Public
+
+router.get("/", async (req, res) => {
+  const { userId, guestId } = req.query;
+
+  try {
+    const cart = await getCart(userId, guestId);
+
+    if (cart) {
+      res.json(cart);
+    } else {
+      res.status(404).json({ message: "Cart not  found" });
+    }
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "server error" });
   }
 });
 
