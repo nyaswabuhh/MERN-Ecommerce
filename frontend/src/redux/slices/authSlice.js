@@ -4,13 +4,12 @@ import axios from "axios";
 //retrieve user info token from localstorage if available
 
 const userFromStorage = localStorage.getItem("userInfo")
-  ? JSON.parse(localStorage.getItem("userInfor"))
+  ? JSON.parse(localStorage.getItem("userInfo"))
   : null;
 
 //check for existing guest id in local storage
 
-const initialGuestId =
-  localStorage.getItem("guestId") || `guest_${new Date.now().getTime()}`;
+const initialGuestId = localStorage.getItem("guestId") || `guest_${Date.now()}`;
 
 localStorage.setItem("guestId", initialGuestId);
 
@@ -62,3 +61,53 @@ export const registerUser = createAsyncThunk(
   }
 );
 
+//create slice
+
+const authSlice = createSlice({
+  name: "auth",
+  initialState,
+  reducers: {
+    logout: (state) => {
+      state.user = null;
+      state.guestId = `guest_${new Date().getTime()}`; //reset guest id on logout
+      localStorage.removeItem("userInfo");
+      localStorage.removeItem("userToken");
+      localStorage.setItem("guestId", state.guestId); //set new guest id in local storage
+    },
+
+    generateNewGuestId: (state) => {
+      state.guestId = `guest_${new Date().getTime()}`;
+      localStorage.setItem("guestId", state.guestId);
+    },
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(loginUser.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(loginUser.fulfilled, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(loginUser.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload.message;
+      })
+      .addCase(registerUser.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(registerUser.fulfilled, (state, action) => {
+        state.loading = false;
+        state.user = action.payload;
+      })
+      .addCase(registerUser.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload.message;
+      });
+  },
+});
+
+export const { logout, generateNewGuestId } = authSlice.actions;
+export default authSlice.reducer;
