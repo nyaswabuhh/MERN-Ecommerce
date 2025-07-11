@@ -186,12 +186,12 @@ const cartSlice = createSlice({
         state.loading = true;
         state.error = null;
       })
-      .addCase(updateCartItemQuantity.fulfilled, (state, action) => {
+      .addCase(mergeCart.fulfilled, (state, action) => {
         state.loading = false;
         state.cart = action.payload;
         saveCartToStorage(action.payload);
       })
-      .addCase(updateCartItemQuantity.rejected, (state, action) => {
+      .addCase(mergeCart.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload?.message || "failed to add to merge cart";
       });

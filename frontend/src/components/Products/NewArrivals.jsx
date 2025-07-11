@@ -1,3 +1,4 @@
+import axios from "axios";
 import React, { useRef, useState } from "react";
 import { useEffect } from "react";
 import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
@@ -11,96 +12,22 @@ const NewArrivals = () => {
   const [canscrollLeft, setCanScrollLeft] = useState(false);
   const [canscrollRight, setCanScrollRight] = useState(true);
 
-  const newArrivals = [
-    {
-      _id: "1",
-      name: "Stylish Jumper",
-      price: 1200,
-      images: [
-        {
-          url: "https://picsum.photos/300/300?random=1",
-          altText: "stylish",
-        },
-      ],
-    },
-    {
-      _id: "2",
-      name: "V Neck Tshirt",
-      price: 1500,
-      images: [
-        {
-          url: "https://picsum.photos/300/300?random=2",
-          altText: "vneck",
-        },
-      ],
-    },
-    {
-      _id: "3",
-      name: "Jacket",
-      price: 3300,
-      images: [
-        {
-          url: "https://picsum.photos/300/300?random=3",
-          altText: "stylish jacket",
-        },
-      ],
-    },
-    {
-      _id: "4",
-      name: "Polo Tshirt",
-      price: 3100,
-      images: [
-        {
-          url: "https://picsum.photos/300/300?random=4",
-          altText: "polo",
-        },
-      ],
-    },
-    {
-      _id: "5",
-      name: "Trouser",
-      price: 3600,
-      images: [
-        {
-          url: "https://picsum.photos/300/300?random=5",
-          altText: "stylish trouser",
-        },
-      ],
-    },
-    {
-      _id: "6",
-      name: "Summer Jeans",
-      price: 2400,
-      images: [
-        {
-          url: "https://picsum.photos/300/300?random=6",
-          altText: "stylish jeans",
-        },
-      ],
-    },
-    {
-      _id: "7",
-      name: "Khaki Pants",
-      price: 1900,
-      images: [
-        {
-          url: "https://picsum.photos/300/300?random=7",
-          altText: "Khaki",
-        },
-      ],
-    },
-    {
-      _id: "8",
-      name: "Blouse",
-      price: 1700,
-      images: [
-        {
-          url: "https://picsum.photos/300/300?random=8",
-          altText: "Blouse",
-        },
-      ],
-    },
-  ];
+  const [newArrivals, setNewArrivals] = useState([]);
+
+  useEffect(() => {
+    const fetchNewArrivals = async () => {
+      try {
+        const response = await axios.get(
+          `${import.meta.env.VITE_BACKEND_URL}/api/products/new-arrivals`
+        );
+        setNewArrivals(response.data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    fetchNewArrivals();
+  }, []);
+
   const handleMouseDown = (e) => {
     setIsDragging(true);
     setStartX(e.pageX - scrollRef.current.offsetLeft);
@@ -120,7 +47,7 @@ const NewArrivals = () => {
 
   const scroll = (direction) => {
     const scrollAmount = direction === "left" ? -300 : 300;
-    scrollRef.current.scrollBy({ left: scrollAmount, behaviour: "smooth" });
+    scrollRef.current.scrollBy({ left: scrollAmount, behavior: "smooth" });
   };
   //update scroll buttons
 
@@ -151,7 +78,7 @@ const NewArrivals = () => {
       updateScrollButtons();
       return () => container.removeEventListener("scroll", updateScrollButtons);
     }
-  }, []);
+  }, [newArrivals]);
 
   return (
     <section className="py-16 px-4 lg:px-0">
