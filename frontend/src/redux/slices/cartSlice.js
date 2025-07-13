@@ -146,9 +146,10 @@ const cartSlice = createSlice({
         state.error = null;
       })
       .addCase(addToCart.fulfilled, (state, action) => {
+        console.log("Cart fulfilled", action.payload); // ✅ Check this
         state.loading = false;
         state.cart = action.payload;
-        saveCartToStorage(ction.payload);
+        saveCartToStorage(action.payload);
       })
       .addCase(addToCart.rejected, (state, action) => {
         state.loading = false;
