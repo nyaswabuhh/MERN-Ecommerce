@@ -1,36 +1,23 @@
-import React from "react";
-
-const checkout = {
-  _id: "123",
-  createdAt: new Date(),
-  checkoutItems: [
-    {
-      productId: "1",
-      name: "Jacket",
-      color: "black",
-      size: "L",
-      price: 1500,
-      quantity: 1,
-      image: "https://picsum.photos/150?random=1",
-    },
-    {
-      productId: "2",
-      name: "Hoodie",
-      color: "red",
-      size: "m",
-      price: 2300,
-      quantity: 1,
-      image: "https://picsum.photos/150?random=2",
-    },
-  ],
-  shippingAddress: {
-    address: "Last Street, Ngumba",
-    city: "Nairobi",
-    country: "Kenya",
-  },
-};
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { clearCart } from "../redux/slices/cartSlice";
 
 const OrderConfirmationPage = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { checkout } = useSelector((state) => state.checkout);
+
+  // clear cart when order is confirmed
+  useEffect(() => {
+    if (checkout && checkout._id) {
+      dispatch(clearCart());
+      localStorage.removeItem("cart");
+    } else {
+      navigate("/my-orders");
+    }
+  }, [checkout, navigate, dispatch]);
+
   const calculateEstimatedDelivery = (createdAt) => {
     const orderDate = new Date(createdAt);
     orderDate.setDate(orderDate.getDate() + 10);
@@ -104,7 +91,7 @@ const OrderConfirmationPage = () => {
                 </p>
                 <p className="text-gray-600">
                   {checkout.shippingAddress.city}
-                  {" ,"} {checkout.shippingAddress.country} 
+                  {" ,"} {checkout.shippingAddress.country}
                 </p>
               </div>
             </div>
