@@ -1,74 +1,81 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import { fetchAdminProducts } from "../redux/slices/adminProductSlice";
+import { fetchAllOrders } from "../redux/slices/adminOrderSlice";
 
 const AdminHomepage = () => {
-  const orders = [
-    {
-      _id: 123123,
-      user: {
-        name: "Jeff Bezos",
-      },
-      totalPrice: 2500,
-      status: "Processing",
-    },
-    {
-      _id: 154767,
-      user: {
-        name: "Tony Nyaswabu",
-      },
-      totalPrice: 7250,
-      status: "Delivered",
-    },
-    {
-      _id: 175432,
-      user: {
-        name: "Alex Simba",
-      },
-      totalPrice: 4000,
-      status: "Processing",
-    },
-    {
-      _id: 652867,
-      user: {
-        name: "Salma Mawondo",
-      },
-      totalPrice: 10000,
-      status: "Processing",
-    },
-  ];
+  const dispatch = useDispatch();
+  const {
+    products,
+    loading: productsLoading,
+    error: productsError,
+  } = useSelector((state) => state.adminProducts);
+
+  const {
+    orders,
+    totalOrders,
+    totalSales,
+    loading: ordersLoading,
+    error: ordersError,
+  } = useSelector((state) => state.adminOrders);
+
+  const sortedOrders = [...orders].sort(
+    (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+  );
+
+  useEffect(() => {
+    dispatch(fetchAdminProducts());
+    dispatch(fetchAllOrders());
+  }, [dispatch]);
 
   const currentDate = new Date();
 
   return (
     <div className="w-full px-4 sm:px-6 lg:px-8 py-6 bg-gray-100 min-h-screen">
       <div className="max-w-7xl mx-auto">
-
-        <div className=" flex justify-between mb-4">
+        <div className="flex justify-between mb-4">
           <h1 className="text-3xl font-bold mb-6">Admin Dashboard</h1>
-          <p className="text-2xl font-semibold">Date: {currentDate.toDateString()}</p>
+          {/* <p className="text-2xl font-semibold">
+              Date: {currentDate.toDateString()}
+            </p> */}
+          {productsLoading || ordersLoading ? (
+            <p>Loading ....</p>
+          ) : productsError ? (
+            <p className="text-red-500">
+              Error fetching products: {productsError}
+            </p>
+          ) : ordersError ? (
+            <p className="text-red-500">Error fetching orders: {ordersError}</p>
+          ) : (
+            <p className="text-2xl font-semibold">
+              Date: {currentDate.toDateString()}
+            </p>
+          )}
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           <div className="p-4 shadow-md rounded-lg bg-white">
             <h2 className="text-xl font-semibold">Revenue</h2>
-            <p className="text-2xl">Ksh 150,000</p>
+            <p className="text-2xl">Ksh {totalSales.toFixed(2)}</p>
           </div>
           <div className="p-4 shadow-md rounded-lg bg-white">
             <h2 className="text-xl font-semibold">Total Orders</h2>
-            <p className="text-2xl">120</p>
-            <Link to="admin/orders" className="text-blue-500 hover:underline">
+            <p className="text-2xl">{totalOrders}</p>
+            <Link to="/admin/orders" className="text-blue-500 hover:underline">
               Manage Orders
             </Link>
           </div>
           <div className="p-4 shadow-md rounded-lg bg-white">
             <h2 className="text-xl font-semibold">Total Products</h2>
-            <p className="text-2xl">65</p>
-            <Link to="admin/products" className="text-blue-500 hover:underline">
+            <p className="text-2xl">{products.length}</p>
+            <Link to="/admin/products" className="text-blue-500 hover:underline">
               Manage Products
             </Link>
           </div>
         </div>
       </div>
+
       <div className="mt-6">
         <h2 className="text-2xl font-bold mb-4">Recent Orders</h2>
         <div className="overflow-x-auto">
@@ -83,16 +90,15 @@ const AdminHomepage = () => {
             </thead>
             <tbody>
               {orders.length > 0 ? (
-                orders.map((order) => (
+                sortedOrders.map((order) => (
                   <tr
                     key={order._id}
                     className="border-b hover:bg-gray-50 cursor-pointer"
                   >
                     <td className="p-4"> {order._id}</td>
                     <td className="p-4"> {order.user.name}</td>
-                    <td className="p-4">{order.totalPrice}</td>
+                    <td className="p-4">{order.totalPrice.toFixed(2)}</td>
                     <td className="p-4">{order.status}</td>
-                    
                   </tr>
                 ))
               ) : (

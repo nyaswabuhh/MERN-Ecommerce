@@ -24,7 +24,7 @@ router.get("/", protect, admin, async (req, res) => {
 
 router.put("/:id", protect, admin, async (req, res) => {
   try {
-    const order = await Order.findById(req.params.id);
+    const order = await Order.findById(req.params.id).populate("user", "name");
 
     console.log("order:", order);
     if (order) {
@@ -39,6 +39,7 @@ router.put("/:id", protect, admin, async (req, res) => {
       console.log("delivered at:", order.deliveredAt);
 
       const updatedOrder = await order.save();
+      
       res.json(updatedOrder);
       console.log("updated order:", updatedOrder);
     } else {

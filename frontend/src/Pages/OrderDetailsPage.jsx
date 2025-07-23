@@ -1,41 +1,24 @@
 import { useState } from "react";
 import React from "react";
 import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { Link, useParams } from "react-router-dom";
+import { fetchOrderDetails } from "../redux/slices/orderSlice";
 
 const OrderDetailsPage = () => {
   const { id } = useParams();
 
-  const [orderDetails, setOrderDetails] = useState(null);
+  const dispatch = useDispatch();
+
+  const { orderDetails, loading, error } = useSelector((state) => state.orders);
 
   useEffect(() => {
-    const mockOrderDetails = {
-      _id: id,
-      createdAt: new Date(),
-      isPaid: true,
-      isDelivered: false,
-      paymentMethod: "Paypal",
-      shippingMethod: "Standard",
-      shippingAddress: { city: "Nairobi", country: "Kenya" },
-      orderItems: [
-        {
-          productId: "1",
-          name: "Trouser",
-          price: 1650,
-          quantity: 2,
-          image: "https://picsum.photos/150?random=1",
-        },
-        {
-          productId: "2",
-          name: "Shirt",
-          price: 4500,
-          quantity: 1,
-          image: "https://picsum.photos/150?random=2",
-        },
-      ],
-    };
-    setOrderDetails(mockOrderDetails);
-  }, [id]);
+    dispatch(fetchOrderDetails(id));
+  }, [dispatch, id]);
+
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error: {error}</p>;
+
   return (
     <div className="max-w-7xl mx-auto p-4 sm:p-6">
       <h2 className="text-2xl md:text-3xl font-bold mb-6">Order Details</h2>
@@ -115,12 +98,18 @@ const OrderDetailsPage = () => {
                       <Link
                         to={`/product/${item.productId}`}
                         className="text-blue-500 hover:underline"
-                      >{item.name}</Link>
+                      >
+                        {item.name}
+                      </Link>
                     </td>
-                    
-                    <td className="px-4 py-2 text-center">Ksh {item.price.toLocaleString()}</td>
+
+                    <td className="px-4 py-2 text-center">
+                      Ksh {item.price.toLocaleString()}
+                    </td>
                     <td className="py-2 px-4 text-center">{item.quantity}</td>
-                    <td className="py-2 px-4 text-center">Ksh {(item.price * item.quantity).toLocaleString()}</td>
+                    <td className="py-2 px-4 text-center">
+                      Ksh {(item.price * item.quantity).toLocaleString()}
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -128,7 +117,7 @@ const OrderDetailsPage = () => {
           </div>
           {/* back to order */}
           <Link to="/my-orders" className="text-blue-500 hover:underline">
-          Back to My Orders
+            Back to My Orders
           </Link>
         </div>
       )}

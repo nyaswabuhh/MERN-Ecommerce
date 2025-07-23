@@ -7,11 +7,17 @@ import {
   FaUser,
 } from "react-icons/fa";
 import { SiGoogleanalytics } from "react-icons/si";
+import { useDispatch } from "react-redux";
 import { Link, NavLink, useNavigate } from "react-router-dom";
+import {logout} from "../../redux/slices/authSlice"
+import {clearCart} from "../../redux/slices/cartSlice"
 
 const AdminSidebar = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const handleLogout = () => {
+    dispatch(logout())
+    dispatch(clearCart())
     navigate("/");
   };
 
@@ -65,7 +71,7 @@ const AdminSidebar = () => {
               : "text-gray-300 hover:bg-gray-700 hover:text-white py-3 px-4 rounded flex items-center space-x-2"
           }
         >
-         <SiGoogleanalytics />
+          <SiGoogleanalytics />
           <span>Reports</span>
         </NavLink>
         <NavLink

@@ -12,7 +12,7 @@ const USER_TOKEN = `Bearer ${localStorage.getItem("userToken")}`;
 export const fetchAdminProducts = createAsyncThunk(
   "adminProducts/fetchProducts",
   async () => {
-    const response = await axios.get(`${API_URL}/admin/products`, {
+    const response = await axios.get(`${API_URL}/api/admin/products`, {
       headers: {
         Authorization: USER_TOKEN,
       },
@@ -42,7 +42,7 @@ export const createProduct = createAsyncThunk(
 
 export const updateProduct = createAsyncThunk(
   "adminProducts/updateProduct",
-  async (IdleDeadline, productData) => {
+  async (id, productData) => {
     const response = await axios.put(
       `${API_URL}/api/admin/products/${id}`,
       productData,
@@ -52,6 +52,7 @@ export const updateProduct = createAsyncThunk(
         },
       }
     );
+    console.log("API products response:", response.data);
     return response.data;
   }
 );

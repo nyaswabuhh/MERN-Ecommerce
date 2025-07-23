@@ -47,7 +47,7 @@ export const updateUser = createAsyncThunk(
         },
       }
     );
-    response.data;
+    return response.data.user;
   }
 );
 
@@ -79,13 +79,13 @@ const adminSlice = createSlice({
       })
       .addCase(fetchUsers.fulfilled, (state, action) => {
         state.loading = false;
-        state.users = actiontion.payload;
+        state.users = action.payload;
       })
       .addCase(fetchUsers.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message;
       })
-      .addCase(updateUser.fulfilled, (state,action) => {
+      .addCase(updateUser.fulfilled, (state, action) => {
         const updateUser = action.payload;
         const userIndex = state.users.findIndex(
           (user) => user._id === updateUser._id
@@ -101,13 +101,28 @@ const adminSlice = createSlice({
         state.loading = true;
         state.error = null;
       })
+      // .addCase(addUser.fulfilled, (state, action) => {
+      //   state.loading = false;
+      //   state.users.push(action.payload.user); //add a new user to the state
+      // })
       .addCase(addUser.fulfilled, (state, action) => {
         state.loading = false;
-        state.users.push(action.payload.user); //add a new user to the state
+
+        const newUser = action.payload.user || action.payload; // supports both formats
+
+        if (newUser && newUser._id) {
+          state.users.push(newUser);
+        } else {
+          console.warn(
+            "Invalid user object in action.payload:",
+            action.payload
+          );
+        }
       })
+
       .addCase(addUser.rejected, (state, action) => {
         state.loading = false;
-        state.error = error.action.message;
+        state.error = action.error.message;
       });
   },
 });
