@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { fetchAdminProducts } from "../redux/slices/adminProductSlice";
 import { fetchAllOrders } from "../redux/slices/adminOrderSlice";
 
+
 const AdminHomepage = () => {
   const dispatch = useDispatch();
   const {
@@ -27,6 +28,7 @@ const AdminHomepage = () => {
   useEffect(() => {
     dispatch(fetchAdminProducts());
     dispatch(fetchAllOrders());
+    
   }, [dispatch]);
 
   const currentDate = new Date();
@@ -69,7 +71,10 @@ const AdminHomepage = () => {
           <div className="p-4 shadow-md rounded-lg bg-white">
             <h2 className="text-xl font-semibold">Total Products</h2>
             <p className="text-2xl">{products.length}</p>
-            <Link to="/admin/products" className="text-blue-500 hover:underline">
+            <Link
+              to="/admin/products"
+              className="text-blue-500 hover:underline"
+            >
               Manage Products
             </Link>
           </div>
